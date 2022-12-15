@@ -2,8 +2,12 @@ FROM ubuntu:latest
 
 ARG DEBIAN-FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y apt-transport-https && apt-get -y install less vim apacheds && rm -f /etc/init.d/apacheds
+RUN apt-get update && apt-get install -y apt-transport-https && apt-get -y install less vim apacheds ldap-utils && rm -f /etc/init.d/apacheds
+
+COPY sample-data.ldif /tmp/.
 
 EXPOSE 10389 10636 60464 60464/udp 60088 60088/udp
 
 CMD /usr/lib/jvm/default-java/bin/java -Djava.awt.headless=true -Xmx256m -Dapacheds.controls=org.apache.directory.api.ldap.codec.controls.cascade.CascadeFactory,org.apache.directory.api.ldap.codec.controls.manageDsaIT.ManageDsaITFactory,org.apache.directory.api.ldap.codec.controls.search.entryChange.EntryChangeFactory,org.apache.directory.api.ldap.codec.controls.search.pagedSearch.PagedResultsFactory,org.apache.directory.api.ldap.codec.controls.search.persistentSearch.PersistentSearchFactory,org.apache.directory.api.ldap.codec.controls.search.subentries.SubentriesFactory,org.apache.directory.api.ldap.extras.controls.ppolicy_impl.PasswordPolicyFactory,org.apache.directory.api.ldap.extras.controls.syncrepl_impl.SyncDoneValueFactory,org.apache.directory.api.ldap.extras.controls.syncrepl_impl.SyncInfoValueFactory,org.apache.directory.api.ldap.extras.controls.syncrepl_impl.SyncRequestValueFactory,org.apache.directory.api.ldap.extras.controls.syncrepl_impl.SyncStateValueFactory -Dapacheds.extendedOperations=org.apache.directory.api.ldap.extras.extended.ads_impl.cancel.CancelFactory,org.apache.directory.api.ldap.extras.extended.ads_impl.certGeneration.CertGenerationFactory,org.apache.directory.api.ldap.extras.extended.ads_impl.gracefulShutdown.GracefulShutdownFactory,org.apache.directory.api.ldap.extras.extended.ads_impl.storedProcedure.StoredProcedureFactory,org.apache.directory.api.ldap.extras.extended.ads_impl.gracefulDisconnect.GracefulDisconnectFactory -Dlog4j.configuration=file:/usr/share/apacheds/instances/default/conf/log4j.properties -Dapacheds.log.dir=/usr/share/apacheds/instances/default/log -cp '/usr/share/apacheds/lib/*' org.apache.directory.server.UberjarMain /usr/share/apacheds/instances/default/
+
+#CMD ldapmodify 

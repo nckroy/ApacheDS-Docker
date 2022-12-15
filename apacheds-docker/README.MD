@@ -12,7 +12,7 @@ Dependencies:
 
 Clone this repo, and then run:
 
-`docker buildx build --platform linux/amd64 - < Dockerfile -t apacheds`
+`docker buildx build --platform linux/amd64 . -t apacheds`
 
 This will build the container and push it to the local Docker repo. Then, run the container as follows:
 
