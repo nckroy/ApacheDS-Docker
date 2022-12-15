@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 ARG DEBIAN-FRONTEND=noninteractive
 
-RUN apt-get update && apt-get install -y apt-transport-https && apt-get -y install less vim apacheds 
+RUN apt-get update && apt-get install -y apt-transport-https && apt-get -y install less vim apacheds && rm -f /etc/init.d/apacheds
 
 EXPOSE 10389 10636 60464 60464/udp 60088 60088/udp
 
