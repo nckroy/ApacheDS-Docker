@@ -12,3 +12,4 @@
 - Modify Shib EDS to derive JSON metadata from Marco Malavolti's Discofeed generator
 - Set up Shib IdP as the target of session initiation from modified FedCM Javascript payload
 - Nicole buy mass quantities of Monster Energy Drink at Costco somewhere proximal to YYZ and bring to hackathon
+- Prep PRs for FedCM codebase, various SAML implementations, and the W3C work
