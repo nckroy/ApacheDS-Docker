@@ -4,12 +4,11 @@
 
 Key:
 
-`
- - Not done
- * Partially complete
- + Done
+ - - Not done
+ - * Partially complete
+ - + Done
 
-* Set up ApacheDS with test credentials for our demo Shib IdP
+- * Set up ApacheDS with test credentials for our demo Shib IdP
 - Set up Marco Malavolti's Shib EDS Discofeed producer in a container
 - Import FedCM Javascript
 - Modify Shib SP to invoke FedCM
@@ -20,4 +19,3 @@ Key:
 - Set up Shib IdP as the target of session initiation from modified FedCM Javascript payload
 - Nicole buy mass quantities of Monster Energy Drink at Costco somewhere proximal to YYZ and bring to hackathon
 - Prep PRs for FedCM codebase, various SAML implementations, and the W3C work
-`
