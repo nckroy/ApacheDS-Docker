@@ -3,16 +3,15 @@
 Copyright © 2022 Internet2, All Rights Reserved
 Licensed under a Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0) license
 
-This container supplies an installation of Apache Directory Server which can be used in connection with other services/containers to bootstrap demos of components which depend on an LDAP directory, Kerberos, or both. Since the Apache Directory Server wrapper currently fails to run on non-Intel architectures, this container can be used on non-Intel x86-64-based architectures to provide a local instance of Apache Directory Server as follows:
+This container supplies an installation of Apache Directory Server which can be used in connection with other services/containers to bootstrap demos of components which depend on an LDAP directory, Kerberos, or both.
 
 Dependencies:
 
 -Runtime environment such as Docker Desktop or similar
--For non-x86-64 architecture-based systems, the ability for your Docker to use the virtualization framework, qemu, or similar to emulate x86-64 architecture
 
-Clone this repo, and then run:
+To build, clone this repo, and then run:
 
-`docker buildx build --platform linux/amd64 . -t apacheds`
+`docker build . -t apacheds`
 
 This will build the container and push it to the local Docker repo. Then, run the container as follows:
 
