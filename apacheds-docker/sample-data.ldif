@@ -1,18 +1,21 @@
-dn: cn=nicole,dc=example,dc=com
+mail: test@example.com
+dn: cn=test,dc=example,dc=com
 changetype: add
-mail: nicolesroy@icloud.com
-givenName: Nicole
-cn: nicole
-sn: Roy
-userPassword;lang-en-us:: c2VjcmV0NQ
+mail: test@example.com
+givenName: Test
+cn: test
+sn: User
 objectClass: inetOrgPerson
 objectClass: organizationalPerson
 objectClass: person
 objectClass: top
 
+dn: cn=test,dc=example,dc=com
+changetype: modify
+add: userPassword;lang-en-US
+userPassword;lang-en-US:: c2VjcmV0NQ==
+
 dn: cn=Administrators,ou=groups,ou=system
 changetype: modify
 add: uniqueMember
-uniqueMember: cn=nicole,dc=example,dc=com
-- 
-
+uniqueMember: cn=test,dc=example,dc=com
