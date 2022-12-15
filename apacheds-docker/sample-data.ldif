@@ -1,0 +1,18 @@
+dn: cn=nicole,dc=example,dc=com
+changetype: add
+mail: nicolesroy@icloud.com
+givenName: Nicole
+cn: nicole
+sn: Roy
+userPassword;lang-en-us:: c2VjcmV0NQ
+objectClass: inetOrgPerson
+objectClass: organizationalPerson
+objectClass: person
+objectClass: top
+
+dn: cn=Administrators,ou=groups,ou=system
+changetype: modify
+add: uniqueMember
+uniqueMember: cn=nicole,dc=example,dc=com
+- 
+
