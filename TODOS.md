@@ -1,0 +1,11 @@
+# FEDCM R & E Hacking TODOS
+
+- Set up ApacheDS with test credentials for our demo Shib IdP
+- Set up Marco Malavolti's Shib EDS Discofeed producer in a container
+- Import FedCM Javascript
+- Modify Shib SP to invoke FedCM
+- Modify FedCM to detect multilateral SAML invocation from the Shib SP
+- Modify FedCM to display the Shib EDS when so invoked
+- Get Chrome team to allow link decoration on 302s coming from FedCM
+- Modify Shib EDS to derive JSON metadata from Marco Malavolti's Discofeed generator
+- Set up Shib IdP as the target of session initiation from modified FedCM Javascript payload
