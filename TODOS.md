@@ -1,5 +1,7 @@
 # FEDCM R & E Hacking TODOS
 
+## (In no coherent order)
+
 - Set up ApacheDS with test credentials for our demo Shib IdP
 - Set up Marco Malavolti's Shib EDS Discofeed producer in a container
 - Import FedCM Javascript
