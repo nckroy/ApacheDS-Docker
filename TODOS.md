@@ -5,6 +5,7 @@
 Key:
 
 ✓ Done
+
 ~ Partially done
 
 - ~ Set up ApacheDS with test credentials for our demo Shib IdP
