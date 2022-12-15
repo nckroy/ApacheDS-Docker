@@ -27,7 +27,9 @@ This will start the container with the necessary ports for:
 
 You may then use a client tool such as Apache Directory Studio, the Apache Directory Studio Eclipse plugin, ldapsearch, or client libraries in your programming framework of choice to bind against the directory.
 
-The superuser bind DN is: `uid=admin,ou=system`
-The superuser bind password (plaintext) is: `secret`
+The superuser bind DN is: `cn=test,dc=example,dc=com`
+The superuser bind password (plaintext) is: `secret5`
+
+This user can be used to do anything you need to the directory, including serving as a test credential for login to other sysystems backed by this verifier.
 
 It is advisable to change these defaults if you plan to run this container anywhere other than a locked-down development environment.
