@@ -37,7 +37,6 @@ node "Amazon Web Services" <<US-West-2>> as aws {
     rectangle "FedCM Javascript" <<JavaScript>> as fedcmjs
   }
 }
-shibidpcontainer .[#707070].> apacheds : uses
 shibsp .[#707070].> rp : protects
 shibidp .[#707070].> metadata : consumes
 eds .[#707070].> discofeed : consumes
