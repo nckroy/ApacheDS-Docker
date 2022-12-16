@@ -1,0 +1,53 @@
+@startuml
+scale max 2000x1414
+title FedCM Playground Deployment
+caption FedCM AWS Deployment View
+
+skinparam {
+  shadowing false
+  arrowColor #707070
+  actorBorderColor #707070
+  componentBorderColor #707070
+  rectangleBorderColor #707070
+  noteBackgroundColor #ffffff
+  noteBorderColor #707070
+}
+node "Amazon Web Services" <<US-West-2>> as aws {
+  node "Container: Chrome Dev" <<Docker Container>> as chromedev {
+    rectangle "FedCM Code" <<Code>> as fedcmapi #1168bd
+  }
+  node "Container: Apache Directory Server" <<Docker container>> as apacheds {
+    rectangle "ApacheDS" <<Docker Container>> as apachedscontainer #1168bd
+  }
+  node "Container: Shibboleth IdP" <<Docker container>> as shibidp {
+    rectangle "Shib IdP" <<Container>> as shibidpcontainer #1168bd
+  }
+  node "Container: Shibboleth SP" <<Docker container>> as shibsp {
+    rectangle "Shib SP" <<Container>> as shibspcontainer #1168bd
+  }
+  node "Container: Relying Party App" <<Docker container>> as rp {
+    rectangle "Wiki" <<Container>> as wikicontainer #1168bd
+  }
+  node "Container: Shibboleth Embedded Discovery Service" <<Docker container>> as eds {
+    rectangle "Shib EDS" <<Container>> as edscontainer #1168bd
+  }
+  node "Amazon S3" <<S3 bucket>> as s3 {
+    rectangle "SAML Metadata" <<XML>> as metadata
+    rectangle "Shibboleth EDS Discovery Feed" <<JSON>> as discofeed
+    rectangle "FedCM Javascript" <<JavaScript>> as fedcmjs
+  }
+}
+shibidpcontainer .[#707070].> apacheds : uses
+shibsp .[#707070].> rp : protects
+shibidp .[#707070].> metadata : consumes
+eds .[#707070].> discofeed : consumes
+shibsp .[#707070].> metadata : consumes
+shibsp .[#707070].> fedcmapi : invokes
+fedcmapi .[#707070].> fedcmjs : displays
+fedcmjs .[#707070].> eds : displays
+eds .[#707070].> shibidp : 302 session initiation
+shibidp .[#707070].> apacheds : verifies user login, fetches attributes
+shibidp .[#707070].> shibsp : 200 saml assertion POST
+shibsp .[#707070].> rp : generates session with attributes
+rp .[#707070].> wikicontainer : user logged in to wiki
+@enduml
