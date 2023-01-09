@@ -7,3 +7,6 @@
 [submodule "docker-dokuwiki"]
 	path = docker-dokuwiki
 	url = git@github.com:linuxserver/docker-dokuwiki.git
+[submodule "shib-eds-discofeed-generator"]
+	path = shib-eds-discofeed-generator
+	url = git@github.com:ConsortiumGARR/shib-eds-discofeed-generator.git
