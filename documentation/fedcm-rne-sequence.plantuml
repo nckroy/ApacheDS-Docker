@@ -6,7 +6,7 @@ autonumber
 Alice -> Wiki: Tries to access wiki
 Wiki --> RP: Is logged in? No
 RP --> Browser: Invokes FedCM with multilateral context
-FedCM --> Alice: Shows account chooser
+FedCM --> Alice: Shows IdP chooser
 Alice --> FedCM: Chooses IdP
 FedCM --> IdP: Redirects Alice to IdP with SAML session initiator for RP
 IdP --> Alice: Login challenge
