@@ -1,0 +1,17 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+Alice -> Wiki: Tries to access wiki
+Wiki --> RP: Is logged in? No
+RP --> Browser: Invokes FedCM with multilateral context
+FedCM --> Alice: Shows account chooser
+Alice --> FedCM: Chooses IdP
+FedCM --> IdP: Redirects Alice to IdP with SAML session initiator for RP
+IdP --> Alice: Login challenge
+Alice --> IdP: Logs in
+IdP --> Browser: Redirects to RP with SAML assertion in front channel
+RP --> Wiki: Verifies SAML assertion, attributes in session variables, redirects to Wiki
+Wiki --> Alice: Grants access
+@enduml
