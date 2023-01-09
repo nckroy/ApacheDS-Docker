@@ -11,7 +11,7 @@ Alice --> FedCM: Chooses IdP
 FedCM --> IdP: Redirects Alice to IdP with SAML session initiator for RP
 IdP --> Alice: Login challenge
 Alice --> IdP: Logs in
-IdP --> Browser: Redirects to RP with SAML assertion in front channel
+IdP --> RP: Redirects to RP with SAML assertion in front channel
 RP --> Wiki: Verifies SAML assertion, attributes in session variables, redirects to Wiki
 Wiki --> Alice: Grants access
 @enduml
