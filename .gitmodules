@@ -1,3 +1,6 @@
 [submodule "shib-sp"]
 	path = shib-sp
 	url = git@github.internet2.edu:docker/shib-sp.git
+[submodule "shib-idp"]
+	path = shib-idp
+	url = git@github.internet2.edu:docker/shib-idp.git
