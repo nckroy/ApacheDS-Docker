@@ -4,3 +4,6 @@
 [submodule "shib-idp"]
 	path = shib-idp
 	url = git@github.internet2.edu:docker/shib-idp.git
+[submodule "docker-dokuwiki"]
+	path = docker-dokuwiki
+	url = git@github.com:linuxserver/docker-dokuwiki.git
