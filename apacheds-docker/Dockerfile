@@ -4,7 +4,7 @@ ARG DEBIAN-FRONTEND=noninteractive
 
 RUN apt-get update && apt-get install -y apt-transport-https && apt-get -y install less vim apacheds ldap-utils && rm -f /etc/init.d/apacheds
 
-COPY ["sample-data.ldif", "boot.sh", "/tmp/."]
+COPY ["sample-data.ldif", "boot.sh", "/tmp/"]
 
 RUN chmod +x /tmp/boot.sh
 

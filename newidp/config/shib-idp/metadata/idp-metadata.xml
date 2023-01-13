@@ -1,0 +1,37 @@
+<EntityDescriptor entityID="https://ec2-1.fedhackathon.net/idp/shibboleth" xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+  <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+    <Extensions>
+      <shibmd:Scope regexp="false">example.com</shibmd:Scope>
+    </Extensions>
+    <KeyDescriptor use="signing">
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>
+MIIDODCCAiCgAwIBAgIJAKWxnDeK/JQFMA0GCSqGSIb3DQEBCwUAMCExHzAdBgNV
+BAMMFmVjMi0xLmZlZGhhY2thdGhvbi5uZXQwHhcNMjMwMTExMjM1MjMwWhcNMjgw
+MTEwMjM1MjMwWjAhMR8wHQYDVQQDDBZlYzItMS5mZWRoYWNrYXRob24ubmV0MIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3l2CYSgItRLhCFJMoOHWFXvq
+8UaayS+XRnLqIia9vfm8K8lDhRiRIFmL30rQsST+r/I8jnSYmPiRNTWTaGcZRE4Y
+H88CnBeWRalr1QFsFKAT4OKHh4QTxd4j/VFQQTlDjEvJbQkRVrjkLNVVQEPCkRFd
+O9ZuECUuPEARcD1qTap8J/nGDLFbT+zN5fNRRIGjrWiCr69GSUiD7O130fcli2H3
+l9ltIuYArxqUoTsZtX21zDfJRuPCcrDLlIfJscQDjQKUf/MKhrDqnHZhA1aslFe1
+lV+Te+6qxRCU1l8pOxzCt5854YR56J0nO76CjRukOM2qC0ZwchyHMzB6Yhs3PQID
+AQABo3MwcTBQBgNVHREESTBHghZlYzItMS5mZWRoYWNrYXRob24ubmV0hi1odHRw
+czovL2VjMi0xLmZlZGhhY2thdGhvbi5uZXQvaWRwL3NoaWJib2xldGgwHQYDVR0O
+BBYEFLuCz1uROqgg790dg3IXZftgcQn/MA0GCSqGSIb3DQEBCwUAA4IBAQDZIODz
+WX5IjeIpXxETHkZ2V8FVWgOjrJuQgw62I7EjeLzibAQZFhhdsEuLo1yJAb4Io0NQ
+QC7AA74z3sdXH7faETwbCJaRICv/8ApSvTnjw6iEERuh4+hY6t7Swj2thKAzdDhN
+OtbStQ++Yye8yllUHXkvEHKGbKPR9x9M/paxF73Dw/gTQGes5wqQ//fxJBtZS1VQ
+gO2s4gtU6nrOxjqoQH3qVVkf8dSp0wZiM/6A/QC6EZiJ4gPeaSu1zYEn+Kcclon5
+1IIPxNNTIZ2gIhXzniNJFSYUmMCcCdzoO44NJ//zzHKTJnvJzwrizsJ44BE/Jav5
+9aIKWj7CNghtwnjI
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+    <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://ec2-1.fedhackathon.net/idp/profile/SAML2/Redirect/SSO"/>
+    <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://ec2-1.fedhackathon.net/idp/profile/SAML2/POST/SSO"/>
+    <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://ec2-1.fedhackathon.net/idp/profile/SAML2/POST-SimpleSign/SSO"/>
+    <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://ec2-1.fedhackathon.net/idp/profile/SAML2/SOAP/ECP"/>
+  </IDPSSODescriptor>
+</EntityDescriptor>
