@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<title>hi</title>
+	</head>
+	<body>
+		<script>
+(async() => {
+const credential = await navigator.credentials.get({
+  identity: {
+    providers: [{
+      configURL: 'https://ec2-2.fedhackathon.net/config.json',
+      clientId: 'ef2ac',
+      nonce: '73b7f'
+    }]
+  }
+});
+const { token } = credential;
+})();
+		</script>
+	</body>
+</html>
