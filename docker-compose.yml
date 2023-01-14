@@ -9,3 +9,8 @@ services:
       - "60464:60464/udp"
       - "60088:60088" 
       - "60088:60088/udp"
+  shibeds:
+    build: shibeds/.
+    ports:
+      - "80:80"
+      - "443:443"

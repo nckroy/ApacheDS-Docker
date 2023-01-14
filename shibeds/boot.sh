@@ -11,7 +11,9 @@ rm -f /var/www/html/index.html
 mv /etc/shibboleth-ds/* /var/www/html/.
 rm -f /var/www/html/idpselect_config.js
 mv /tmp/idpselect_config.js /var/www/html/.
-mv /tmp/test-eds.html /var/www/html/.
+mv /tmp/test-eds.html /var/www/html/
+rm -f /etc/apache2/ports.conf
+mv /tmp/ports.conf /etc/apache2/.
 /sbin/apache2ctl start
 
 sleep infinity
