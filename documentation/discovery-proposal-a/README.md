@@ -89,7 +89,7 @@ The learning management system creates its own discovery system, using the proto
 
 ## References
 
-[CredMgmt] [Credential Management Level 1](https://w3c.github.io/webappsec-credential-management/)
+[CredMgmt] [Credential Management Level 1](https://w3c.github.io/webappsec-credential-management/)</br>
 [edugain] [edugain](https://technical.edugain.org)</br>
 [FedCM] [FedCM](https://fedidcg.github.io/FedCM/)</br>
 [GeoJSON] [RFC 7946: The GeoJSON Format](https://www.rfc-editor.org/rfc/rfc7946)</br>
