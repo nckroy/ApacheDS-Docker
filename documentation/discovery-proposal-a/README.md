@@ -39,7 +39,7 @@ This proposal extends the method by which an RP may allow the user to select fro
 
 [FedCM] extended the CredentialRequestOptions object, note §2.1.2 of [CredMgmt]. This would propose yet another Credential Type: Discovered, and define a DiscoveredCredential interface object.
 
-The DiscoveredCredential object would identify the Discovery System according to the requirements for §4.1.1. Identifying Providers [CredMgmt]: the Discovery system MUST be identified by the ASCII serialization of the origin the provider uses for the search. 
+The DiscoveredCredential object would identify the Discovery System according to the requirements for §4.1.1. Identifying Providers [CredMgmt]: the Discovery system MUST be identified by the ASCII serialization of the origin the provider uses for the search.
 
 If the RP requests Discovered Credential, the RP may use the DiscoveredCredential interface object to specify one or more protocol type. If no protocol is specified, any IdP provided by the Discovery service will satisfy the RP. If protocol types are listed, only IdPs that have a matching label by the Discovery system
 
