@@ -1,12 +1,14 @@
 # Discovery proposal
 
-The goal of this proposal is to support communities of IdPs and RPs that have established interoperation. Ideally the solution may also support an RP with many IdPs, where the IdPs do not have relationships with each other.
+The goal of this proposal is to support communities of IdPs and RPs that have established interoperation. Ideally the solution may also support an RP with many IdPs, where the IdPs do *not* have relationships with each other.
 
 ## Assumed requirements
 
 **The RP cannot know the user's choice until a satisfactory authentication.** In order to have parity with FedCM as of 2023-01-31, the RP remains unaware of the user's IdP selection until the choice is made.
 
 ### Why assume this requirement?
+
+The FedCM is built on top a separate W3C specification [CredMgmt] and attempts to align the federated authentication flow in the patterns established by that  API, which was explicitly designed for extensions. (See §8.2 [CredMgmt].) Continuing to align with [CredMgmt] aligns with that browser architecture principal.
 
 Note that if the IdP is communicated to the RP before authentication occurs, the value of browser participation is that of *user experience*: the browser knows IdPs the user has selected in the past and can ease the "NASCAR" experience for the user by using that knowledge to help the user navigate through the discovery flow.
 
@@ -27,20 +29,19 @@ We propose an additional party, which may have a different origin than the IdP a
 * an identity protocol type
 * a list of criteria the IdP meets as key value pairs
 
-The Discovery system also hosts an endpoint from which the browser can retrieve necessary information once a user has selected an IdP.
+The Discovery system also hosts an endpoint from which the browser can retrieve necessary IdP information once a user has selected an IdP.
 
 Note that these are open endpoints on the internet. The protocol type and the criteria key-values MAY be defined privately between RPs and the Discovery system. However, the IdPs included in the Discovery system will be public.
 
 ### Relying parties specify Discovery system
 
-This proposal extends the method by which an RP may allow the user to select from more than one IdP [MultiIdP](#ref).
+This proposal extends the method by which an RP may allow the user to select from more than one IdP. [FedCM] specifies an extension to the navigator.credentials browser API. (See §2.3 of [CredMgmt])
 
-TODO look up multi IdP proposal and extend
-TODO Discovery system reference should be similar to IdP system reference
+[FedCM] extended the CredentialRequestOptions object, note §2.1.2 of [CredMgmt]. This would propose yet another Credential Type: Discovered, and define a DiscoveredCredential interface object.
 
-Extension to multi IdP proposal, instead of IdPs, the RP may specify a single Discovery system.
+The DiscoveredCredential object would identify the Discovery System according to the requirements for §4.1.1. Identifying Providers [CredMgmt]: the Discovery system MUST be identified by the ASCII serialization of the origin the provider uses for the search. 
 
-If the RP specifies a Discovery system, the RP may specify one or more protocol type. If no protocol is specified, any IdP provided by the Discovery service will satisfy the RP. If protocol types are listed, only IdPs that have a matching label by the Discovery system
+If the RP requests Discovered Credential, the RP may use the DiscoveredCredential interface object to specify one or more protocol type. If no protocol is specified, any IdP provided by the Discovery service will satisfy the RP. If protocol types are listed, only IdPs that have a matching label by the Discovery system
 
 ### The browser interaction
 
@@ -86,8 +87,10 @@ A learning management system integrates across school system against different s
 
 The learning management system creates its own discovery system, using the protocol indicator to identify the combination of scopes that are needed for a requests.
 
-## References {#ref} 
+## References
 
+[CredMgmt] [Credential Management Level 1](https://w3c.github.io/webappsec-credential-management/)
+[FedCM] [FedCM](https://fedidcg.github.io/FedCM/)</br>
 [GeoJSON] [RFC 7946: The GeoJSON Format](https://www.rfc-editor.org/rfc/rfc7946)</br>
 [JSON] [RFC 7519: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc7159)</br>
 [MultiIdP] [FedCM Multiple IDP Support Explainer](https://github.com/fedidcg/FedCM/blob/main/proposals/multi-idp-api.md)</br>
