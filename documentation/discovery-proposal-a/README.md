@@ -1,16 +1,26 @@
 # Discovery proposal
 
-The goal of this proposal is to support a community of IdPs and RPs that have established interoperation. The goal is to support both an RP with many IdPs, where the IdPs do not have relationships as well as a community of IdPs.
+The goal of this proposal is to support communities of IdPs and RPs that have established interoperation. Ideally the solution may also support an RP with many IdPs, where the IdPs do not have relationships with each other.
 
 ## Assumed requirements
 
-1. The RP cannot know the user's choice in order to construct a request specific for an IdP.
+**The RP cannot know the user's choice until a satisfactory authentication.** In order to have parity with FedCM as of 2023-01-31, the RP remains unaware of the user's IdP selection until the choice is made.
+
+### Why assume this requirement?
+
+Note that if the IdP is communicated to the RP before authentication occurs, the value of browser participation is that of *user experience*: the browser knows IdPs the user has selected in the past and can ease the "NASCAR" experience for the user by using that knowledge to help the user navigate through the discovery flow.
+
+However, the browser implementers may argue that the relying party can host its own discovery flows, solve the NASCAR problem on its own, and then the RP may proceed through the single IdP request version of FedCM.
+
+Isolating the selection until both the user and the IdP agree to interoperation with the RP does protect the user's affiliations from a RP that is testing for access.
+
+TODO Is previous paragraph too paranoid?
 
 ## Proposal
 
 ### The Discovery system: new participant in flows
 
-Introduce an additional party, which may have a different origin than the IdP and RPs: the Discovery system. The Discovery system hosts a searchable index of IdPs, with at least one and no more than five indexes for searching. The search retrieves objects that represent IdPs, IdP Discovery Objects. This object contains:
+We propose an additional party, which may have a different origin than the IdP and RPs: the Discovery system. The Discovery system hosts a searchable index of IdPs, with at least one and no more than five indexes for searching. The search retrieves objects that represent IdPs. The objects contain:
 
 * an identifier for the IdP within the Discovery system
 * elements to present to the user in the UI, including localizable names
@@ -19,9 +29,11 @@ Introduce an additional party, which may have a different origin than the IdP an
 
 The Discovery system also hosts an endpoint from which the browser can retrieve necessary information once a user has selected an IdP.
 
-These are open endpoints on the internet. The protocol type and the criteria key-values MAY be defined privately between RPs and the Discovery system. However, the IdPs included in the Discovery system will be public.
+Note that these are open endpoints on the internet. The protocol type and the criteria key-values MAY be defined privately between RPs and the Discovery system. However, the IdPs included in the Discovery system will be public.
 
 ### Relying parties specify Discovery system
+
+This proposal extends the method by which an RP may allow the user to select from more than one IdP [MultiIdP](#ref).
 
 TODO look up multi IdP proposal and extend
 TODO Discovery system reference should be similar to IdP system reference
@@ -74,8 +86,9 @@ A learning management system integrates across school system against different s
 
 The learning management system creates its own discovery system, using the protocol indicator to identify the combination of scopes that are needed for a requests.
 
-## References
+## References {#ref} 
 
 [GeoJSON] [RFC 7946: The GeoJSON Format](https://www.rfc-editor.org/rfc/rfc7946)</br>
-[JSON] [RFC 7519: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc7159)
+[JSON] [RFC 7519: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc7159)</br>
+[MultiIdP] [FedCM Multiple IDP Support Explainer](https://github.com/fedidcg/FedCM/blob/main/proposals/multi-idp-api.md)</br>
 [WebIDL] [WebIDL](https://webidl.spec.whatwg.org)
