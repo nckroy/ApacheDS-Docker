@@ -76,20 +76,6 @@ The learning management system creates its own discovery system, using the proto
 
 ## References
 
-[GeoJSON] [RFC 7946: The GeoJSON Format](https://www.rfc-editor.org/rfc/rfc7946)
+[GeoJSON] [RFC 7946: The GeoJSON Format](https://www.rfc-editor.org/rfc/rfc7946)</br>
 [JSON] [RFC 7519: The JavaScript Object Notation (JSON) Data Interchange Format](https://www.rfc-editor.org/rfc/rfc7159)
 [WebIDL] [WebIDL](https://webidl.spec.whatwg.org)
-
-## Testing
-
-``` txt
-Fencing working?
-
-```
-
-<figcaption>
-
-Demo the figure caption for a codeblock
-
-</figcaption>
-Back to text
