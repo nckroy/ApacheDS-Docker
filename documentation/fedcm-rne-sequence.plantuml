@@ -16,6 +16,154 @@ RP --> Wiki: Verifies SAML assertion, attributes in session variables, redirects
 Wiki --> Alice: Grants access
 @enduml
 
+
+@startuml BasicSAML
+
+title "Basic SAML Authentication, no FedCM"
+
+box User
+    participant Alice
+    participant Browser
+    participant "Window" as window
+end box
+
+box research.org
+    participant Wiki
+    participant RP
+end box
+
+participant "IdP 01" as IdP01
+participant "IdP 02" as IdP02
+
+Alice --> Browser: go wiki.\nresource.org
+Browser  <-> Wiki: response 302 
+
+group SAML Profile §4.1.3.1
+    Browser -> RP: GET RP
+    RP --> RP: No active\nSSO state\nfound.\nSet\nRelayState.
+end group
+group SAML Profile §4.1.3.2
+    RP -> Browser: HTML for RP UI;\nsession cookie
+    Browser --> window **
+    activate window 
+    note over Alice, IdP02
+        The RP presents the user with a list of possible identity providers. OCLC has 30,000 
+        customers in our WAYF (with a variety of IdP protocols). eduGAIN has 5269 SAML IdPs.
+    end note
+    Alice --> window: select IdP
+    window --> Browser 
+    Browser -> RP: POST choice of IdP02
+    RP --> RP  
+    note left
+        Construct SAML Request
+        1. Issuer's unique entity ID, URI
+        2. return URL
+        3. optional <AuthnRequest>, for example to signal MFA
+        4. Security elements: 
+            time stamp
+            unique ID
+            signature
+        5. IdP 
+    end note
+
+end group
+
+
+
+alt Assume existing SSO  state at IdP02
+    IdP02 -> Browser:  Single Account Label
+    note over Browser, IdP02
+        SAML IdPs would not expose more than one
+        account at a time. The label for the account 
+        may not be an email. 
+    end note
+else Assume no existing SSO state at IdP02
+    IdP02 -> Browser: request to initiate authN
+end
+
+Browser <-> IdP01: GET client?....
+Browser -> IdP02: GET client?client_id=[entityId]&\nSAML_request=[req]
+
+alt Assume IdP recognizes RP
+    IdP02 -> Browser: metadata about IdP-RP interaction
+     note over Browser, IdP02
+        Note that the RP's request might require the 
+        browser to step up an already active authentication
+        state to improve the authentication assurance.
+        The response here would include a message that the
+        IdP needs control before authenticating the user.
+     end note
+else IdP cannot satisfy RP request
+    IdP02 -> Browser: Error code, Error message for user
+    note over Browser, IdP02
+        An IdP might not recognize an RP at all, or the IdP
+        might not be able to satisfy criteria in the current 
+        RP request.
+    end note
+end
+
+Browser --> Browser: IdP chooser
+note right
+    Assume UI presents the two previously
+    registered with a link to choose a 
+    different one. If there was an error 
+    message for a previously registered 
+    IdP, display to the user, but do not 
+    allow selection.
+
+    Assume choice between IdP 01 & IdP 02
+    or select from more.
+end note
+Alice --> Browser: select IDP 02
+
+Browser -> IdP02: cookies; POST assertion
+note over Browser, IdP02
+    Includes SAMLRequest 
+end note
+
+alt Assume active SSO stete, no step up
+    IdP02 -> Browser: LARGE XML response, encoded, etc
+    destroy window
+    Browser -> RP: response\nsession cookie
+    destroy Browser
+    RP --> RP: establish\nsession
+    RP -> Browser: 302
+    Browser <-> Wiki: GET wiki
+    Browser --> window: render wiki
+    activate window
+else Assume IdP requests control
+    [--> Browser
+    activate Browser
+    IdP02 -> Browser: HTML
+    destroy window
+    Browser -> window: Render IdP page
+    activate window
+    note over Browser, IdP02
+        There may be multiple POSTS here, particularly given
+        multiple factors to establish identity. It is conceivable
+        that this flow may spawn a second authentication
+        flow.
+    end note
+    ...iterations of...
+    Alice --> window: interaction
+    window --> Browser
+    Browser <-> IdP02
+    ...eventually...
+    window -[#red]-> Browser:  n.c.post\n(LARGE XML\nresponse)
+    destroy window
+    Browser -> RP: response\nsession cookie
+    destroy Browser
+    RP --> RP: establish\nsession
+    RP -> Browser: 302
+    Browser <-> Wiki: GET wiki
+    Browser --> window: render wiki
+    activate window
+end    
+
+
+@enduml
+
+
 @startuml fedCMDetailSeq
 
 box User
