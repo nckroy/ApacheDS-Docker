@@ -49,23 +49,33 @@ group SAML Profile §4.1.3.2
     note over Alice, IdP02
         The RP presents the user with a list of possible identity providers. OCLC has 30,000 
         customers in our WAYF (with a variety of IdP protocols). eduGAIN has 5269 SAML IdPs.
+        
+        Seamless Access provides a solution here for a variety of use cases.
+        
+        SAML Profile §4.1.3.2 does not cover how this is done, but notes **proxying 
+        authentication requests**, which is done. See also [SDP-SP20,SDP-SP23]
     end note
     Alice --> window: select IdP
     window --> Browser 
-    Browser -> RP: POST choice of IdP02
+    Browser -> RP: choice of IdP02
+end group
+group SAML Profile §4.1.3.3
     RP --> RP  
     note left
-        Construct SAML Request
+        Construct SAML Request, cryptographically signed
         1. Issuer's unique entity ID, URI
-        2. return URL
-        3. optional <AuthnRequest>, for example to signal MFA
+        2. return URL which is verified against list registered 
+            endpoints [SDP-SP05]
+        3. optional <AuthnRequest>, for example to signal MFA 
+            [SDP-SP07]
         4. Security elements: 
             time stamp
             unique ID
-            signature
-        5. IdP 
+        5. IdP (prevents taking a request for one IdP and using 
+            it at another IdP)
     end note
-
+    RP -> Browser: 302 GET idp.edu/sso??SAMLRequest=[request]\nsee [SDP-SP02]\nsee also saml-bindings-2.0-os §3.4
+    Browser -> IdP02: GET idp.edu/sso??SAMLRequest=[request]\nwith idp.edu cookies
 end group
 
 
