@@ -1,0 +1,91 @@
+@startuml samlProxyDiscoveryDetailSeq
+
+title Basic SAMLv2 Proxy Flow (including discovery)
+
+box User #LightGray
+    participant Alice #LightSalmon
+    participant Browser #LightSalmon
+end box
+
+box research.org #LightCyan
+    participant Wiki #LightSalmon
+    participant RP #LightSalmon
+end box
+
+participant "IdP Proxy" as proxy #LightSalmon
+participant "Discovery Service" as disco #LightSalmon
+participant "IdP" as idp #LightSalmon
+
+Alice --> Browser: go wiki.\nresearch.org
+Browser <-> Wiki: response 302 
+Browser -> RP: GET RP
+activate RP
+RP --> RP: No active\nSSO state\nfound
+RP -> Browser: 302 to IdP Proxy w/ SAML2 ""<samlp:AuthnRequest>""
+Browser -> proxy: SAML2 ""<samlp:AuthnRequest>"" 
+note right
+    Assumes use of SAML2 **HTTP-Redirect** binding. ""<samlp:AuthnRequest>""
+    could also be delivered via **HTTP-POST** binding.
+end note
+activate proxy
+proxy --> proxy: validate ""<samlp:AuthnRequest>""
+proxy -> Browser: 302 redirect to Discovery Service
+Browser -> disco: GET DISCO
+activate disco
+disco --> Alice: list of IdP options presented to user
+Alice --> disco: IdP selected
+disco -> Browser: 302 redirect to IdP Proxy with IdP selection
+destroy disco
+Browser -> proxy
+proxy --> proxy: generate new ""<samlp:AuthnRequest>""\nfrom user's IdP selection
+proxy -> Browser: 302 redirect to selected IdP with ""<samlp:AuthnRequest>""
+Browser -> idp
+activate idp
+alt Assume existing SSO state at IdP that satisfies ""<samlp:RequestedAuthnContext>>""
+    idp -> Browser: send SAML2 ""<samlp:Response>"" to\nIdP Proxy via HTTP-POST binding
+    note right
+        ""<samlp:Response>"" could be sent over
+        different binding; HTTP-POST is
+        most common. 
+    end note
+    Browser -> proxy
+else Assume no existing SSO state at IdP
+    loop until AuthN success, could also require MFA
+        idp --> Alice: prompt user to authenticate
+        Alice --> idp: user performs authentication action
+        idp --> idp: validate authentication 
+    end
+    idp -> Browser: set IdP SSO session cookie and send SAML2\n""<samlp:Response>"" to IdP Proxy via HTTP-POST binding
+    note right
+        ""<samlp:Response>"" could be sent over
+        different binding; HTTP-POST is
+        most common. 
+    end note
+    Browser -> proxy
+end
+destroy idp
+proxy -> Browser: set IdP Proxy SSO session cookie and send\nSAML ""<samlp:Response>"" to nRP ACS endpoint\nvia HTTP-POST binding
+note right
+    ""<samlp:Response>"" could be sent over
+    different binding; HTTP-POST is
+    most common. 
+end note
+destroy proxy
+Browser -> RP
+RP -> RP: validate ""<samlp:Response>"" and inspect attributes\nin ""<saml:Assertion>"" to make authZ decision
+alt Access allowed
+    RP -> Browser: Set RP SSO session cookie and redirect user to original target
+    Browser -> Wiki: 302 redirect
+    note over Wiki #LightGreen
+        🙂 Yay, we accessed the wiki!
+    end note
+else Access Denied
+    RP -> Browser: return failure response
+    note over Browser #LightCoral
+        🙁 Boo, we were denied
+        access to the wiki!
+    end note
+end
+destroy RP
+
+@enduml
