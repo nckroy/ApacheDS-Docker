@@ -57,30 +57,69 @@ group SAML Profile §4.1.3.2
     end note
     Alice --> window: select IdP
     window --> Browser 
+    destroy window
     Browser -> RP: choice of IdP02
 end group
-group SAML Profile §4.1.3.3
+group SAML Profile §4.1.3.3 and SAML Core §4.1.3.3
     RP --> RP  
     note left
-        Construct SAML Request, cryptographically signed
-        1. Issuer's unique entity ID, URI
-        2. return URL which is verified against list registered 
-            endpoints [SDP-SP05]
+        Construct SAML Request:
+        1. Issuer's unique entity ID (URI), plus return URL 
+            (AssertionConsumerServiceURL);
         3. optional <AuthnRequest>, for example to signal MFA 
-            [SDP-SP07]
+            [SDP-SP07], or ForceAuthn,
         4. Security elements: 
             time stamp
-            unique ID
-        5. IdP (prevents taking a request for one IdP and using 
-            it at another IdP)
+            unique ID (persist)
+            optional signature
+        5. IdP's SSO destination
     end note
+    activate RP
     RP -> Browser: 302 GET idp.edu/sso??SAMLRequest=[request]\nsee [SDP-SP02]\nsee also saml-bindings-2.0-os §3.4
     Browser -> IdP02: GET idp.edu/sso??SAMLRequest=[request]\nwith idp.edu cookies
+    activate IdP02
 end group
 
+group Validate request
+    IdP02 --> IdP02: validate
+    note left
+        Minimally ensure SO known and ACS acceptable. Also evaluate whether assurance 
+        requests (and any other supported requests) can be honored. Identify steps
+        required for identifying the principal.
+    end note 
+    alt Request cannot be honored
+        IdP02 --> IdP02: construct\nresponse 
+        note left
+            Construct error response, including the request's unique ID.
+            Error should allow SO to assist user in understanding the failure.
+        end note 
+    end
+end
+group SAML Profile §4.1.3.4 
+    alt Existing SSO state, no assurance
+        IdP02 --> IdP02: construct\nresponse 
+        note left
+            Construct response as below, including the request's unique ID.
+            Error should allow SO to assist user in understanding the failure.
+        end note 
 
+    else Existing SSO but ForceAuthn = true
+        IdP02 -> Browser: challenge
+        Browser -> window
+        activate window
+        Alice --> window : respond
+        window -> Browser
+        destroy window
+        Browser -> IdP02
+        IdP02 --> IdP02
+        alt Challenge successful
+            IdP02 --> IdP02: response as elsewhere
+        else Challenge fails
+            IdP02 --> IdP02: error
+        end
 
-alt Assume existing SSO  state at IdP02
+    end
+
     IdP02 -> Browser:  Single Account Label
     note over Browser, IdP02
         SAML IdPs would not expose more than one
