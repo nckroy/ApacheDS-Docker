@@ -21,7 +21,7 @@ Wiki --> Alice: Grants access
 
 title "Basic SAML Authentication, no FedCM"
 
-box User
+box Principal
     participant Alice
     participant Browser
     participant "Window" as window
@@ -38,29 +38,31 @@ participant "IdP 02" as IdP02
 Alice --> Browser: go wiki.\nresource.org
 Browser  <-> Wiki: response 302 
 
-group SAML Profile §4.1.3.1
+group Request to RP - saml-profiles-2.0-os §4.1.3.1
     Browser -> RP: GET RP
     RP --> RP: No active\nSSO state\nfound.\nSet\nRelayState.
 end group
-group SAML Profile §4.1.3.2
+group SP selects IdP saml-profiles-2.0-os §4.1.3.2
     RP -> Browser: HTML for RP UI;\nsession cookie
     Browser --> window **
     activate window 
     note over Alice, IdP02
-        The RP presents the user with a list of possible identity providers. OCLC has 30,000 
+        The RP presents the principal with a list of possible identity providers. OCLC has 30,000
         customers in our WAYF (with a variety of IdP protocols). eduGAIN has 5269 SAML IdPs.
         
         Seamless Access provides a solution here for a variety of use cases.
         
-        SAML Profile §4.1.3.2 does not cover how this is done, but notes **proxying 
-        authentication requests**, which is done. See also [SDP-SP20,SDP-SP23]
+        SAML Profile §4.1.3.2 does not cover how this is done, but notes **proxying authentication
+        requests** as an option and other discovery methods. 
+        
+        See also [SDP-SP20,SDP-SP23]
     end note
     Alice --> window: select IdP
     window --> Browser 
     destroy window
     Browser -> RP: choice of IdP02
 end group
-group SAML Profile §4.1.3.3 and SAML Core §4.1.3.3
+group Issue request saml-profiles-2.0-os §4.1.3.3 and saml-core-2.0-os §4.1.3.3
     RP --> RP  
     note left
         Construct SAML Request:
@@ -83,132 +85,116 @@ end group
 group Validate request
     IdP02 --> IdP02: validate
     note left
-        Minimally ensure SO known and ACS acceptable. Also evaluate whether assurance 
-        requests (and any other supported requests) can be honored. Identify steps
+        Ensure SO is known and ACS [SDP-IDP06] acceptable.
+
+        If signed, check signature. [SDP-IDP04] [SDP-IDP05]
+
+        Evaluate whether assurance requests [SDP-SP07] or 
+        ForceAuthn [SDP-IDP07] (and any other supported 
+        requests) can be honored. Identify steps
         required for identifying the principal.
+
     end note 
     alt Request cannot be honored
         IdP02 --> IdP02: construct\nresponse 
         note left
             Construct error response, including the request's unique ID.
-            Error should allow SO to assist user in understanding the failure.
+            Error should allow SO to assist principal in understanding the failure.
         end note 
     end
 end
-group SAML Profile §4.1.3.4 
-    alt Existing SSO state, no assurance
+group Identify principal saml-profiles-2.0-os §4.1.3.4 
+else Existing SSO state, no assurance request
+    note over Alice, IdP02
+        **Existing SSO can be uncommon for some usecases.**
+
+        Note NIST SP 800-63B §4.1.3 Dec 2022 draft specfies that, for the lowest auth assurance
+        level (AAL1), a session SHOULD be terminated at no longer than 30 days regardless of principal's 
+        activity.The next levels, AAL2 & AAL3, are specified in §4.2.3 and §4.3.3, for  
+        **reauthentication once per 12 hours or 30 (15) minutes inactivity.** 
+    end note
+    IdP02 --> IdP02: initiate\nresponse 
+    note left
+        Construct response as below, including the request's unique ID.
+    end note 
+
+else Existing SSO but ForceAuthn = true
+    IdP02 -> Browser: challenge
+    Browser -> window
+    activate window
+    Alice --> window : respond
+    note right: See below, "No existing SSO," for challenge complexities.
+    window -> Browser
+    destroy window
+    Browser -> IdP02
+    IdP02 --> IdP02
+    group Challenge successful
+        IdP02 --> IdP02: initiate\nresponse 
+        note left
+            See below, "Build response," for response process.
+        end note 
+    else Challenge fails
         IdP02 --> IdP02: construct\nresponse 
         note left
-            Construct response as below, including the request's unique ID.
-            Error should allow SO to assist user in understanding the failure.
+            Construct error response, including the request's unique ID.
+            Error should allow SO to assist principal in understanding the failure.
         end note 
+    end
+else Redirect principal to IdP
+    note over Alice, IdP02
+        ** Repeat from "Request to RP - saml-profiles-2.0-os §4.1.3.1"**
 
-    else Existing SSO but ForceAuthn = true
-        IdP02 -> Browser: challenge
-        Browser -> window
-        activate window
-        Alice --> window : respond
-        window -> Browser
-        destroy window
-        Browser -> IdP02
-        IdP02 --> IdP02
-        alt Challenge successful
-            IdP02 --> IdP02: response as elsewhere
-        else Challenge fails
-            IdP02 --> IdP02: error
-        end
+        Note that authentication may require proxying to a separate service. Use case includes
+        a university that agregates authentication from the univeristy proper as well as the 
+        univeristy hospital, related colleges (Law, Business), research institutions, and alumni.
 
+        In this case, the IdP becopmes an RP, may need to manage discovery, and then redirects
+        the principal to the next IdP in the chain. 
+    end note
+else Identify principal
+    note over Alice, IdP02
+        SAML does not specify authentication practices. See NIST SP 800-63B for US government
+        specifications. Notes here from Dec 2022 draft. 
+    end note
+    group Authenticator memorized secret or MFA activation secret
+    IdP02 -> Browser: challenge
+    Browser -> window
+    activate window
+    Alice --> window : respond
+    window -> Browser
+    destroy window
+    Browser -> IdP02
+    IdP02 --> IdP02
+    note left: Verify secret per NIST SP 800-63B (Dec 2022) §5.1.1.2
+    
+    group Evidence forces change of secret
+        note over Alice, IdP02
+            If there is evidence of a threat the user may be prompted to change their secret.
+            NIST SP 800-63B-4 ip line 735. This behavior may differ in implementations and the
+            user may have to reinitialize their authentication flow, or may be authenticated 
+            back to the RP after that process.
+        end note 
+    else Challenge successful, no MFA
+        IdP02 --> IdP02: initiate\nresponse 
+        note left
+            See below, "Build response," for response process.
+        end note 
+    else Challenge fails
+        IdP02 --> IdP02: construct\nresponse 
+        note left
+            Construct error response, including the request's unique ID.
+            Error should allow SO to assist principal in understanding the failure.
+        end note 
+    else Challenge successful
+        note over Alice, IdP02
+            +2023-02-27 - 15:30 PST
+        end note
     end
 
-    IdP02 -> Browser:  Single Account Label
-    note over Browser, IdP02
-        SAML IdPs would not expose more than one
-        account at a time. The label for the account 
-        may not be an email. 
-    end note
-else Assume no existing SSO state at IdP02
-    IdP02 -> Browser: request to initiate authN
+
+
 end
-
-Browser <-> IdP01: GET client?....
-Browser -> IdP02: GET client?client_id=[entityId]&\nSAML_request=[req]
-
-alt Assume IdP recognizes RP
-    IdP02 -> Browser: metadata about IdP-RP interaction
-     note over Browser, IdP02
-        Note that the RP's request might require the 
-        browser to step up an already active authentication
-        state to improve the authentication assurance.
-        The response here would include a message that the
-        IdP needs control before authenticating the user.
-     end note
-else IdP cannot satisfy RP request
-    IdP02 -> Browser: Error code, Error message for user
-    note over Browser, IdP02
-        An IdP might not recognize an RP at all, or the IdP
-        might not be able to satisfy criteria in the current 
-        RP request.
-    end note
-end
-
-Browser --> Browser: IdP chooser
-note right
-    Assume UI presents the two previously
-    registered with a link to choose a 
-    different one. If there was an error 
-    message for a previously registered 
-    IdP, display to the user, but do not 
-    allow selection.
-
-    Assume choice between IdP 01 & IdP 02
-    or select from more.
-end note
-Alice --> Browser: select IDP 02
-
-Browser -> IdP02: cookies; POST assertion
-note over Browser, IdP02
-    Includes SAMLRequest 
-end note
-
-alt Assume active SSO stete, no step up
-    IdP02 -> Browser: LARGE XML response, encoded, etc
-    destroy window
-    Browser -> RP: response\nsession cookie
-    destroy Browser
-    RP --> RP: establish\nsession
-    RP -> Browser: 302
-    Browser <-> Wiki: GET wiki
-    Browser --> window: render wiki
-    activate window
-else Assume IdP requests control
-    [--> Browser
-    activate Browser
-    IdP02 -> Browser: HTML
-    destroy window
-    Browser -> window: Render IdP page
-    activate window
-    note over Browser, IdP02
-        There may be multiple POSTS here, particularly given
-        multiple factors to establish identity. It is conceivable
-        that this flow may spawn a second authentication
-        flow.
-    end note
-    ...iterations of...
-    Alice --> window: interaction
-    window --> Browser
-    Browser <-> IdP02
-    ...eventually...
-    window -[#red]-> Browser:  n.c.post\n(LARGE XML\nresponse)
-    destroy window
-    Browser -> RP: response\nsession cookie
-    destroy Browser
-    RP --> RP: establish\nsession
-    RP -> Browser: 302
-    Browser <-> Wiki: GET wiki
-    Browser --> window: render wiki
-    activate window
-end    
-
+   
 
 @enduml
 
@@ -301,10 +287,10 @@ alt Assume IdP recognizes RP
         browser to step up an already active authentication
         state to improve the authentication assurance.
         The response here would include a message that the
-        IdP needs control before authenticating the user.
+        IdP needs control before authenticating the principal.
      end note
 else IdP cannot satisfy RP request
-    IdP02 -> Browser: Error code, Error message for user
+    IdP02 -> Browser: Error code, Error message for principal
     note over Browser, IdP02
         An IdP might not recognize an RP at all, or the IdP
         might not be able to satisfy criteria in the current 
@@ -318,8 +304,8 @@ note right
     registered with a link to choose a 
     different one. If there was an error 
     message for a previously registered 
-    IdP, display to the user, but do not 
-    allow selection.
+    IdP, display to the principal, but 
+    do not allow selection.
 
     Assume choice between IdP 01 & IdP 02
     or select from more.
