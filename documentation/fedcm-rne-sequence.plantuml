@@ -148,7 +148,7 @@ else Redirect principal to IdP
         a university that agregates authentication from the univeristy proper as well as the 
         univeristy hospital, related colleges (Law, Business), research institutions, and alumni.
 
-        In this case, the IdP becopmes an RP, may need to manage discovery, and then redirects
+        In this case, the IdP becomes an RP, may need to manage discovery, and then redirects
         the principal to the next IdP in the chain. 
     end note
 else Identify principal
