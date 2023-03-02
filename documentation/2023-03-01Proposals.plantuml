@@ -1,0 +1,153 @@
+
+@startuml OffloadedTrust
+
+Title Offloaded Trust
+
+participant Alice
+
+box "Browser\nCompany" #White
+    box Browser
+        participant "Client" as Browser
+        participant "RP html" as Window
+        participant "Modal" as modal
+    end box
+    participant "Browser\nService" as browserService
+end box
+
+participant "RP server" as RP
+
+participant "IdP 01" as IdP
+participant "Paired\nService" as Service
+
+participant "Fed 1" as fed
+
+group Bootstrap
+
+    note over Alice, fed
+        Pairwise trust: browsers to federations
+        OpenID Connect federation - where Browser service gets the key and how browser validates, more complicated
+        As long as we have a fairly static root cert, other certs can rotate more frequently.
+    end note
+
+    browserService -> fed: get keys\nor key location\n"Fed Bootstrapper"
+    fed -> browserService
+    browserService -> fed: metadata*\n"Fed Fetch & Validate"
+    fed -> browserService
+    browserService -> browserService: check\nsignature
+    browserService -> fed: get UX\n"Fed Fetch & Validate"
+    fed -> browserService
+    browserService -> browserService: check\nsignature
+    browserService -> Browser: frequent, automated push 
+end
+newpage
+group Discovery initiated
+    Alice -> Browser: goto URL
+    Browser <-> RP: get URL
+    Browser --> Window: render
+    Alice --> Window: login
+    note over Alice, fed
+        **Federation NASCAR**
+        Will begin with the assumption that the SP can provide multiple federations to browser until the modal developers cry for mercy.
+        Then the SP will need to ask the user for which fed.
+    end note
+    Window --> Browser: js ({<federation,SP,\n[null|{IdPs}>})
+    Browser --> Browser: is SP in fed?
+    Browser --> Browser: if {IdPs},\nvalidate,\nfilter
+    Browser --> modal: filtered UX(s)
+    note over Browser, modal
+        UX makes no calls outside of client.
+        Give attribution to Fed Operator.
+        Browser selects correct localized UX.
+    end note
+    group Choice
+    else User selects
+        Alice --> modal: pick IdP 01
+        modal --> Browser
+        Browser --> Browser: register tuple
+        Browser --> Window: <SP, IdP, Fed>
+        Window --> Browser: verb RP_URL tuple
+        Browser -> RP: verb RP_URL tuple
+        RP -> Browser: initiate protocol
+        Browser --> Browser: allows\nflows\nin fed
+        Browser -> IdP: classified as not tracking
+    else User disapproves
+        Alice --> modal: disapproves
+        modal --> Browser
+        Browser --> Window: NO
+    end
+end
+newpage
+group Pairwise initiated 
+    Alice -> Browser: goto URL
+    Browser <-> Service: get URL
+    Browser --> Window: render
+    Alice --> Window: request\nresource   
+    Window --> Browser: <IdP, SP, Fed>
+    Browser --> Browser: is SP in fed?
+    Browser --> Browser: validate\nIdP
+    Browser --> Browser: only one\nIdP, no\ndisco
+    Browser --> modal: get\npermission
+    
+    group Choice
+    else User selects
+        Alice --> modal: approve
+        modal --> Browser
+        Browser --> Browser: register tuple
+        Browser --> Window: <SP, IdP, Fed>
+        Window --> Browser: verb URL tuple
+        Browser -> Service: verb RP_URL tuple
+        Service -> Browser: initiate protocol
+        Browser --> Browser: allows\nflows\nin fed
+        Browser -> IdP: classified as not tracking
+    else User opts out
+        Alice --> modal: disapproves
+        modal --> Browser
+        Browser --> Window: NO
+    end
+end
+
+
+@enduml
+@startuml idp-sp-storage
+
+Title idp-sp-storage API
+
+participant Alice
+
+box "Browser\nCompany" #White
+    box Browser
+        participant "Client" as Browser
+        participant "RP html" as Window
+        participant "Permission\nprompt" as modal
+    end box
+    participant "Browser\nService" as browserService
+end box
+
+participant "RP server" as RP
+
+participant "IdP 01" as IdP
+participant "Paired\nService" as Service
+
+participant "Fed 1" as fed
+
+
+    Alice -> Browser: goto URL
+    Browser <-> RP: get URL
+    Browser --> Window: render
+    Window --> Browser: n.c.allowed.isEmpty(<sp>)
+    Browser --> Window: False
+    Window --> Window: create\njs picker
+    Alice --> Window: picks IdP 01
+    Window --> Browser: n.c.allowed.put
+    Browser --> Window: promise
+    Browser --> modal: 
+    Alice --> modal: Yes
+    modal --> Browser: Yes
+    Browser --> Window: resolve promise
+    Window -> RP: go ahead (put details)
+    RP -> Browser: begin protocol
+    Browser --> Browser: allows\nflows\nin put
+    Browser -> IdP: classified as not tracking
+
+
+@enduml
