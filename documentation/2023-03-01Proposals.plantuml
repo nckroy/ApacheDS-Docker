@@ -120,34 +120,54 @@ box "Browser\nCompany" #White
         participant "RP html" as Window
         participant "Permission\nprompt" as modal
     end box
-    participant "Browser\nService" as browserService
 end box
-
 participant "RP server" as RP
 
-participant "IdP 01" as IdP
-participant "Paired\nService" as Service
-
-participant "Fed 1" as fed
-
-
     Alice -> Browser: goto URL
-    Browser <-> RP: get URL
+    Browser <-> RP: get URL    
     Browser --> Window: render
-    Window --> Browser: n.c.allowed.isEmpty(<sp>)
-    Browser --> Window: False
-    Window --> Window: create\njs picker
-    Alice --> Window: picks IdP 01
-    Window --> Browser: n.c.allowed.put
-    Browser --> Window: promise
-    Browser --> modal: 
-    Alice --> modal: Yes
-    modal --> Browser: Yes
-    Browser --> Window: resolve promise
-    Window -> RP: go ahead (put details)
-    RP -> Browser: begin protocol
-    Browser --> Browser: allows\nflows\nin put
-    Browser -> IdP: classified as not tracking
-
+    group SP discovers user's IdP
+    else SP knows the IdP 
+        note over Window, RP
+            URL could indicate an affiliation.
+        end note
+        Window --> Browser: n.c.allowed.put
+        Browser --> Window: promise
+        Browser --> modal: 
+        Alice --> modal: Yes
+        modal --> Browser: Yes
+        Browser --> Window: resolve promise
+        Window ->] : begin protocol to IdP
+        note left
+            Some protocol bindings require the RP
+            server to construct a specific request.
+            Protocol exchanged classified as 
+            not tracking.
+        end note
+    else SP does not know the IdP
+        Window --> Browser: n.c.allowed.isEmpty
+        alt isEmpty=True
+            Browser --> Window: True
+            Window <--> Browser: n.c.allowed.invoke
+            Window ->] : begin protocol to IdP
+            note left
+            Some protocol bindings require the RP
+            server to construct a specific request.
+            Protocol exchanged classified as 
+            not tracking.
+        end note
+        else isEmpty=False
+            Browser --> Window: False
+            Window --> Window: Discovery
+            note left
+            Invoke a discovery mechanism by which
+            Alice may select IdP choice.
+            end note
+            note over Alice, RP
+                Go to "SP knows the IdP"
+            end note
+        end group
+    
+   
 
 @enduml
