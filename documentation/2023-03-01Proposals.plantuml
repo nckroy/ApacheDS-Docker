@@ -146,8 +146,8 @@ participant "RP server" as RP
         end note
     else SP does not know the IdP
         Window --> Browser: n.c.allowed.isEmpty
-        alt isEmpty=True
-            Browser --> Window: True
+        alt isEmpty=False
+            Browser --> Window: False
             Window <--> Browser: n.c.allowed.invoke
             Window ->] : begin protocol to IdP
             note left
@@ -156,8 +156,8 @@ participant "RP server" as RP
             Protocol exchanged classified as 
             not tracking.
         end note
-        else isEmpty=False
-            Browser --> Window: False
+        else isEmpty=True
+            Browser --> Window: True
             Window --> Window: Discovery
             note left
             Invoke a discovery mechanism by which
